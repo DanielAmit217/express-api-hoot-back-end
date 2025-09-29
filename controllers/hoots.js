@@ -78,8 +78,26 @@ router.get("/:hootId", verifyToken, async (req, res) => {
   }
 });
 
+router.put("/:hootId/comments/:commentId", verifyToken, async (req, res) => {
+  try {
+    const hoot = await Hoot.findById(req.params.hootId);
+    const comment = hoot.comments.id(req.params.commentId);
 
-// Delete-Comment
+    // ensures the current user is the author of the comment
+    if (comment.author.toString() !== req.user._id) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to edit this comment" });
+    }
+
+    comment.text = req.body.text;
+    await hoot.save();
+    res.status(200).json({ message: "Comment updated successfully" });
+  } catch (err) {
+    res.status(500).json({ err: err.message });
+  }
+});
+
 router.delete("/:hootId/comments/:commentId", verifyToken, async (req, res) => {
   try {
     const hoot = await Hoot.findById(req.params.hootId);
@@ -98,14 +116,5 @@ router.delete("/:hootId/comments/:commentId", verifyToken, async (req, res) => {
     res.status(500).json({ err: err.message });
   }
 });
-
-
-
-
-
-
-
-
-
 
 module.exports = router;
