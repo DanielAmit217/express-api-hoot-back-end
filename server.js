@@ -35,6 +35,6 @@ app.use("/users", usersRouter);
 app.use("/hoots", hootsRouter);
 
 // Start the server and listen on port 3000
-app.listen(3000, () => {
+app.listen(3001, () => {
   console.log("The express app is ready!");
 });

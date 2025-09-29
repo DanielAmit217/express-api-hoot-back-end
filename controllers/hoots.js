@@ -30,6 +30,28 @@ router.get("/", verifyToken, async (req, res) => {
   }
 });
 
+//Update
+router.put("/:hootId", verifyToken, async (req, res) => {
+  try {
+    const hoot = await Hoot.findById(req.params.hootId);
+
+    if (!hoot.author.equals(req.user._id)) {
+      return res.status(403).send("You're not allowed to do that!");
+    }
+
+    const updatedHoot = await Hoot.findByIdAndUpdate(
+      req.params.hootId,
+      req.body,
+      { new: true }
+    );
+
+    updatedHoot._doc.author = req.user;
+
+    res.status(200).json(updatedHoot);
+  } catch (err) {
+    res.status(500).json({ err: err.message });
+  }
+});
 
 //Delete
 router.delete("/:hootId", verifyToken, async (req, res) => {
@@ -46,14 +68,6 @@ router.delete("/:hootId", verifyToken, async (req, res) => {
     res.status(500).json({ err: err.message });
   }
 });
-
-
-
-
-
-
-
-
 
 router.get("/:hootId", verifyToken, async (req, res) => {
   try {
