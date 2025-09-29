@@ -14,7 +14,6 @@ router.post("/", verifyToken, async (req, res) => {
     const hoot = await Hoot.create(req.body);
     hoot._doc.author = req.user;
     res.status(201).json(hoot);
-
   } catch (err) {
     res.status(500).json({ err: err.message });
   }
@@ -56,5 +55,13 @@ router.delete("/:hootId", verifyToken, async (req, res) => {
 
 
 
+router.get("/:hootId", verifyToken, async (req, res) => {
+  try {
+    const hoot = await Hoot.findById(req.params.hootId).populate("author");
+    res.status(200).json(hoot);
+  } catch (error) {
+    res.status(500).json({ err: err.message });
+  }
+});
 
 module.exports = router;
