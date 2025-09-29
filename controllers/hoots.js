@@ -30,6 +30,31 @@ router.get("/", verifyToken, async (req, res) => {
   }
 });
 
+
+//Delete
+router.delete("/:hootId", verifyToken, async (req, res) => {
+  try {
+    const hoot = await Hoot.findById(req.params.hootId);
+
+    if (!hoot.author.equals(req.user._id)) {
+      return res.status(403).send("You're not allowed to do that!");
+    }
+
+    const deletedHoot = await Hoot.findByIdAndDelete(req.params.hootId);
+    res.status(200).json(deletedHoot);
+  } catch (err) {
+    res.status(500).json({ err: err.message });
+  }
+});
+
+
+
+
+
+
+
+
+
 router.get("/:hootId", verifyToken, async (req, res) => {
   try {
     const hoot = await Hoot.findById(req.params.hootId).populate("author");
